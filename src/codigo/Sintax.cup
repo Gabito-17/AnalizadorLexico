@@ -1,0 +1,70 @@
+package codigo;
+
+import java_cup.runtime.Symbol;
+
+parser code
+{:
+    private Symbol s;
+    public void syntax_error(Symbol s){
+        this.s = s;
+    }
+
+    public Symbol getS(){
+        return this.s;
+    }
+:};
+
+terminal Programa, Identificador, PuntoYComa, Entonces, Entero, Si, Sino, Equivalencia,
+    ParentesisApertura, ParentesisCierre, Asignacion, Variables, DosPuntos, Coma, Funcion, Inicio, Fin, Modulo, Numero, Leer, Escribir;
+
+non terminal PROGRAMA, DECLARACIONES_VARIABLES, DECLARACIONES_FUNCIONES, CUERPO, DECLARACIONES, 
+    TIPO, FUNCION, EXPRESION, PARAMETROS, SENTENCIA, IF, FACTOR, ASIGNACION, CUERPO_FUNCION, LLAMADA_FUNCION, SENTENCIAS;
+
+start with PROGRAMA;
+
+PROGRAMA ::= Programa Identificador ParentesisApertura PARAMETROS ParentesisCierre PuntoYComa 
+             DECLARACIONES_VARIABLES DECLARACIONES_FUNCIONES CUERPO;
+
+PARAMETROS ::= 
+             | Identificador 
+             | Identificador Coma PARAMETROS 
+             | Identificador DosPuntos TIPO 
+             | Identificador DosPuntos TIPO Coma PARAMETROS;
+
+DECLARACIONES_VARIABLES ::= Variables DECLARACIONES DosPuntos TIPO PuntoYComa;
+
+DECLARACIONES_FUNCIONES ::= FUNCION;
+
+DECLARACIONES ::= Identificador 
+                | Identificador Coma DECLARACIONES;
+
+FUNCION ::= Funcion Identificador ParentesisApertura PARAMETROS ParentesisCierre DosPuntos TIPO PuntoYComa CUERPO_FUNCION;
+
+CUERPO_FUNCION ::= Inicio SENTENCIA Fin PuntoYComa;
+
+CUERPO ::= Inicio SENTENCIAS Fin;
+
+SENTENCIAS ::= SENTENCIA 
+            | SENTENCIA SENTENCIAS;
+
+
+SENTENCIA ::= IF 
+            | ASIGNACION 
+            | LLAMADA_FUNCION
+            | Leer ParentesisApertura DECLARACIONES ParentesisCierre PuntoYComa
+            | Escribir ParentesisApertura Identificador ParentesisApertura DECLARACIONES ParentesisCierre ParentesisCierre;
+
+ASIGNACION ::= Identificador Asignacion EXPRESION;
+
+IF ::= Si EXPRESION Entonces SENTENCIA Sino SENTENCIA;
+
+TIPO ::= Entero;
+
+EXPRESION ::= EXPRESION Modulo FACTOR
+            | EXPRESION Equivalencia FACTOR
+            | FACTOR;
+
+FACTOR ::= Numero 
+         | Identificador
+         | Identificador Coma Identificador
+         | Identificador ParentesisApertura EXPRESION ParentesisCierre;
